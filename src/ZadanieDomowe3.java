@@ -18,21 +18,53 @@ public class ZadanieDomowe3 {
         System.out.println();
     }
 
-    public static void main(String[] args) {
-        int size = scanner.nextInt();
-        boolean[][] board = new boolean[size][size];
-        double startAlive = 0.3*size;
 
-        for(int i = 0; i<size; i++)
-            for(int j = 0; j<size; j++){
-                board[i][j] = false;
+    private static boolean[][] nextMove(boolean[][] board) {
+        int n = board.length;
+        boolean[][] nextBoard = new boolean[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int aliveNeighborsCount = countAliveNeighbors(board, i, j);
+                if (board[i][j]) {
+                    nextBoard[i][j] = aliveNeighborsCount == 2 || aliveNeighborsCount == 3;
+                } else {
+                    nextBoard[i][j] = aliveNeighborsCount == 3;
+                }
             }
-        for(int i = 0; i<startAlive; i++){
-            int x = random.nextInt(1, size);
-            int y = random.nextInt(1, size);
-            board[x][y] = true;
         }
-        printArray(board);
+        return nextBoard;
+    }
+
+    private static int countAliveNeighbors(boolean[][] board, int row, int col) {
+        int n = board.length;
+        int count = 0;
+        for (int i = row - 1; i <= row + 1; i++) {
+            for (int j = col - 1; j <= col + 1; j++) {
+                if (i >= 0 && i < n && j >= 0 && j < n && !(i == row && j == col)) {
+                    count += board[i][j] ? 1 : 0;
+                }
+            }
+        }
+        return count;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Podaj rozmiar planszy: ");
+        int n = scanner.nextInt();
+        boolean[][] board = new boolean[n][n];
+        Random random = new Random();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                board[i][j] = random.nextDouble() < 0.3;
+            }
+        }
+        while (true) {
+            printArray(board);
+            System.out.println("Nacisnij Enter, aby wykonac kolejny ruch...");
+            scanner.nextLine();
+            board = nextMove(board);
+        }
 
     }
 
